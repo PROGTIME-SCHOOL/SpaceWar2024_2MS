@@ -16,6 +16,13 @@ namespace SpaceWar.Classes
         private Texture2D texture;
         private float speed;
 
+        private Rectangle collision;
+
+        public Rectangle Collision
+        {
+            get { return collision; }
+        }
+
         public Player()
         {
             position = new Vector2(50, 350);
@@ -26,6 +33,7 @@ namespace SpaceWar.Classes
         public void LoadContent(ContentManager manager)
         {
             texture = manager.Load<Texture2D>("player");
+            collision = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
         }
         public void Update()
         {
@@ -66,6 +74,8 @@ namespace SpaceWar.Classes
             {
                 position.Y = 600 - texture.Height;
             }
+
+            collision = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
         }
 
         public void Draw(SpriteBatch _spriteBatch)
