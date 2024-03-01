@@ -20,6 +20,9 @@ namespace SpaceWar.Classes
 
         private List<Bullet> bulletList;
 
+        private int time;
+        private int maxTime;
+
         public Rectangle Collision
         {
             get { return collision; }
@@ -31,6 +34,8 @@ namespace SpaceWar.Classes
             speed = 10;
             texture = null;
             bulletList = new List<Bullet>();
+            time = 0;
+            maxTime = 60;
         }
 
         public void LoadContent(ContentManager manager)
@@ -40,6 +45,7 @@ namespace SpaceWar.Classes
         }
         public void Update(ContentManager manager)
         {
+            time++;
             KeyboardState keyboardState = Keyboard.GetState();
             if (keyboardState.IsKeyDown(Keys.W))
             {
@@ -58,13 +64,21 @@ namespace SpaceWar.Classes
                 position.X += speed;
             }
 
-            if (keyboardState.IsKeyDown(Keys.Space))
+            if (time > maxTime)
+            {
+                Bullet b = new Bullet();
+                b.LoadContent(manager);
+                b.DestinationRactangle = new Rectangle((int)position.X + texture.Width / 2 - b.Width / 2,
+                    (int)position.Y, b.Width, b.Width);
+                bulletList.Add(b);
+                time = 0;
+            }
+            /*if (keyboardState.IsKeyDown(Keys.Space))
             {
                 Bullet b = new Bullet((int)position.X, (int)position.Y);
                 b.LoadContent(manager);
                 bulletList.Add(b);
-            }
-
+            }*/
 
             if (position.X < 0)
             {

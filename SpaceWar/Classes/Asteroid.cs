@@ -16,6 +16,7 @@ namespace SpaceWar.Classes
         private Vector2 position;
         private float speed;
         private Rectangle collision;
+        private bool isAlive;
 
         public Vector2 Position
         {
@@ -33,6 +34,12 @@ namespace SpaceWar.Classes
         public int Width
         {
             get { return texture.Width; }
+        }
+
+        public bool IsAlive
+        {
+            get { return isAlive; }
+            set { isAlive = value; }
         }
 
         public Asteroid()

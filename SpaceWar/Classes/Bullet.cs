@@ -13,16 +13,35 @@ namespace SpaceWar.Classes
     {
         private Texture2D texture;
         private Rectangle destinationRactangle;
+        private int size;
+        private bool isAlive;
 
+        public Rectangle DestinationRactangle
+        {
+            set { destinationRactangle = value; }
+        }
+
+        public int Width
+        {
+            get { return size; }
+        }
+
+        public bool IsAlive
+        {
+            get { return isAlive; }
+            set { isAlive = value; }
+        }
         public Bullet()
         {
             texture = null;
-            destinationRactangle = new Rectangle(0, 0, 20, 20);
+            size = 20;
+            destinationRactangle = new Rectangle(0, 0, size, size);
         }
         public Bullet(int x, int y)
         {
             texture = null;
-            destinationRactangle = new Rectangle(x, y, 20, 20);
+            size = 20;
+            destinationRactangle = new Rectangle(x, y, size, size);
         }
 
         public void LoadContent(ContentManager manager)

@@ -18,8 +18,6 @@ namespace SpaceWar
         private Player player;
         private Space space;
 
-        private Bullet bullet;
-
         private List<Asteroid> asteroids;
         private int screenWidth;
         private int screenHeight;
@@ -45,7 +43,6 @@ namespace SpaceWar
             // TODO: Add your initialization logic here
 
 
-            bullet = new Bullet();
             player = new Player();
             space = new Space();
             asteroids = new List<Asteroid>();
@@ -59,7 +56,6 @@ namespace SpaceWar
             // TODO: use this.Content to load your game content here
             player.LoadContent(Content);
             space.LoadContent(Content);
-            bullet.LoadContent(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -92,7 +88,6 @@ namespace SpaceWar
                 a.Draw(_spriteBatch);
             }
 
-            bullet.Draw(_spriteBatch);
 
             _spriteBatch.End();
             base.Draw(gameTime);
