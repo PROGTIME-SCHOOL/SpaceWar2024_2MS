@@ -27,7 +27,10 @@ namespace SpaceWar.Classes
         {
             get { return collision; }
         }
-
+        public List<Bullet> BulletList
+        {
+            get { return bulletList; }
+        }
         public Player()
         {
             position = new Vector2(50, 350);
@@ -66,10 +69,9 @@ namespace SpaceWar.Classes
 
             if (time > maxTime)
             {
-                Bullet b = new Bullet();
+                Bullet b = new Bullet(5,5);
                 b.LoadContent(manager);
-                b.DestinationRactangle = new Rectangle((int)position.X + texture.Width / 2 - b.Width / 2,
-                    (int)position.Y, b.Width, b.Width);
+                b.Position = new Vector2((int)position.X + texture.Width / 2 - b.Width / 2, (int)position.Y);
                 bulletList.Add(b);
                 time = 0;
             }
@@ -79,6 +81,15 @@ namespace SpaceWar.Classes
                 b.LoadContent(manager);
                 bulletList.Add(b);
             }*/
+
+            for (int i = 0; i < bulletList.Count; i++)
+            {
+                if (bulletList[i].IsAlive == false)
+                {
+                    bulletList.RemoveAt(i);
+                    i--;
+                }
+            }
 
             if (position.X < 0)
             {

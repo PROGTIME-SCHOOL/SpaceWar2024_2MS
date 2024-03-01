@@ -13,17 +13,32 @@ namespace SpaceWar.Classes
     {
         private Texture2D texture;
         private Rectangle destinationRactangle;
-        private int size;
+        private int width;
+        private int height;
         private bool isAlive;
 
-        public Rectangle DestinationRactangle
+        public Vector2 Position
         {
-            set { destinationRactangle = value; }
+            get { return new Vector2(destinationRactangle.X, destinationRactangle.Y); }
+            set
+            {
+                destinationRactangle.X = (int)value.X;
+                destinationRactangle.Y = (int)value.Y;
+            }
+        }
+
+        public Rectangle Collision
+        {
+            get { return destinationRactangle; }
         }
 
         public int Width
         {
-            get { return size; }
+            get { return width; }
+        }
+        public int Height
+        {
+            get { return height; }
         }
 
         public bool IsAlive
@@ -34,14 +49,14 @@ namespace SpaceWar.Classes
         public Bullet()
         {
             texture = null;
-            size = 20;
-            destinationRactangle = new Rectangle(0, 0, size, size);
+            width = 20;
+            height = 20;
+            destinationRactangle = new Rectangle(0, 0, width, height);
+            isAlive = true;
         }
-        public Bullet(int x, int y)
+        public Bullet(int x, int y) : this()
         {
-            texture = null;
-            size = 20;
-            destinationRactangle = new Rectangle(x, y, size, size);
+            destinationRactangle = new Rectangle(x, y, width, height);
         }
 
         public void LoadContent(ContentManager manager)
@@ -51,6 +66,11 @@ namespace SpaceWar.Classes
         public void Update()
         {
             destinationRactangle.Y -= 3;
+
+            if (Position.Y < 0 - height - 5)
+            {
+                isAlive = false;
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)

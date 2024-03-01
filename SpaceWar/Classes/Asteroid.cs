@@ -46,13 +46,12 @@ namespace SpaceWar.Classes
         {
             texture = null;
             position = new Vector2(0, 0);
-            speed = 2;
+            speed = 10;//2
+            isAlive = true;
         }
-        public Asteroid(Vector2 pos)
+        public Asteroid(Vector2 pos) : this() 
         {
-            texture = null;
             position = pos;
-            speed = 2;
         }
 
         public void LoadContent(ContentManager manager)

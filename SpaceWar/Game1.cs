@@ -67,6 +67,7 @@ namespace SpaceWar
             player.Update(Content);
             space.Update();
             UpdateAsteroid();
+            CheckCollision();
 
             base.Update(gameTime);
         }
@@ -99,14 +100,49 @@ namespace SpaceWar
 
             asteroid.LoadContent(Content);
 
-            Random random = new Random();
 
-            int x = random.Next(0, screenWidth - asteroid.Width);
-            int y = random.Next(0 - screenHeight - asteroid.Height, 0);
+            do while (true)
+                {
+                    Random random = new Random();
 
-            asteroid.Position = new Vector2(x, y);
+                    int x = random.Next(0, screenWidth - asteroid.Width);
+                    int y = random.Next(0 - screenHeight - asteroid.Height, 0);
+
+                    asteroid.Position = new Vector2(x, y);
+                }
+            foreach (Asteroid a in asteroids)
+            {
+                if (asteroid.Collision.Intersects(a.Collision))
+                {
+                    random = new Random();
+
+                    x = random.Next(0, screenWidth - asteroid.Width);
+                    y = random.Next(0 - screenHeight - asteroid.Height, 0);
+
+                    asteroid.Position = new Vector2(x, y);
+                }
+            }
 
             asteroids.Add(asteroid);
+        }
+        private void CheckCollision()
+        {
+            foreach (Asteroid a in asteroids)
+            {
+                if (a.Collision.Intersects(player.Collision))
+                {
+                    a.IsAlive = false;
+                }
+                foreach (Bullet b in player.BulletList)
+                {
+                    if (a.Collision.Intersects(b.Collision))
+                    {
+                        a.IsAlive = false;
+                        b.IsAlive = false;
+                    }
+                }
+            }
+
         }
         private void UpdateAsteroid()
         {
@@ -115,7 +151,6 @@ namespace SpaceWar
                 Asteroid a = asteroids[i];
 
                 a.Update();
-
 
                 //teleport
                 if (a.Position.Y > screenHeight + 50)
@@ -127,16 +162,14 @@ namespace SpaceWar
 
                     a.Position = new Vector2(x, y);
                 }
-
-                if (a.Collision.Intersects(player.Collision))
+                if (a.IsAlive == false)
                 {
-                    //БУДЕТ ПРОБЛЕМА
-                    asteroids.Remove(a);
-                    i--;//проблема решена
+                    asteroids.RemoveAt(i);
+                    i--;
                 }
             }
             //загрузить доп астероид
-            if(asteroids.Count < asteroidAmount)
+            if (asteroids.Count < asteroidAmount)
             {
                 LoadAsteroid();
             }
