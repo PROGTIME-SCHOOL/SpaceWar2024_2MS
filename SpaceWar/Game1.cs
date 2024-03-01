@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using SpaceWar.Classes;
 using System;
+using SharpDX.XAudio2;
 
 namespace SpaceWar
 {
@@ -17,9 +18,13 @@ namespace SpaceWar
         private Player player;
         private Space space;
 
+        private Bullet bullet;
+
         private List<Asteroid> asteroids;
         private int screenWidth;
         private int screenHeight;
+
+        private int asteroidAmount;
 
         public Game1()
         {
@@ -31,11 +36,16 @@ namespace SpaceWar
             screenHeight = 600;
             _graphics.PreferredBackBufferWidth = screenWidth;
             _graphics.PreferredBackBufferHeight = screenHeight;
+
+            asteroidAmount = 10;
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+
+
+            bullet = new Bullet();
             player = new Player();
             space = new Space();
             asteroids = new List<Asteroid>();
@@ -49,21 +59,7 @@ namespace SpaceWar
             // TODO: use this.Content to load your game content here
             player.LoadContent(Content);
             space.LoadContent(Content);
-            for (int i = 0; i < 10; i++)
-            {
-                Asteroid asteroid = new Asteroid();
-
-                asteroid.LoadContent(Content);
-
-                Random random = new Random();
-
-                int x = random.Next(0, screenWidth - asteroid.Width);
-                int y = random.Next(0 - screenHeight - asteroid.Height, 0);
-
-                asteroid.Position = new Vector2(x, y);
-
-                asteroids.Add(asteroid);
-            }
+            bullet.LoadContent(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -72,24 +68,10 @@ namespace SpaceWar
                 Exit();
 
             // TODO: Add your update logic here
-            player.Update();
+            player.Update(Content);
             space.Update();
-            foreach (Asteroid a in asteroids)
-            {
-                a.Update();
+            UpdateAsteroid();
 
-
-                //teleport
-                if (a.Position.Y > screenHeight + 50)
-                {
-                    Random random = new Random();
-
-                    int x = random.Next(0, screenWidth - a.Width);
-                    int y = random.Next(0 - screenHeight - a.Height, 0);
-
-                    a.Position = new Vector2(x, y);
-                }
-            }
             base.Update(gameTime);
         }
 
@@ -110,9 +92,59 @@ namespace SpaceWar
                 a.Draw(_spriteBatch);
             }
 
+            bullet.Draw(_spriteBatch);
 
             _spriteBatch.End();
             base.Draw(gameTime);
+        }
+
+        private void LoadAsteroid()
+        {
+            Asteroid asteroid = new Asteroid();
+
+            asteroid.LoadContent(Content);
+
+            Random random = new Random();
+
+            int x = random.Next(0, screenWidth - asteroid.Width);
+            int y = random.Next(0 - screenHeight - asteroid.Height, 0);
+
+            asteroid.Position = new Vector2(x, y);
+
+            asteroids.Add(asteroid);
+        }
+        private void UpdateAsteroid()
+        {
+            for (int i = 0; i < asteroids.Count; i++)
+            {
+                Asteroid a = asteroids[i];
+
+                a.Update();
+
+
+                //teleport
+                if (a.Position.Y > screenHeight + 50)
+                {
+                    Random random = new Random();
+
+                    int x = random.Next(0, screenWidth - a.Width);
+                    int y = random.Next(0 - screenHeight - a.Height, 0);
+
+                    a.Position = new Vector2(x, y);
+                }
+
+                if (a.Collision.Intersects(player.Collision))
+                {
+                    //БУДЕТ ПРОБЛЕМА
+                    asteroids.Remove(a);
+                    i--;//проблема решена
+                }
+            }
+            //загрузить доп астероид
+            if(asteroids.Count < asteroidAmount)
+            {
+                LoadAsteroid();
+            }
         }
     }
 }

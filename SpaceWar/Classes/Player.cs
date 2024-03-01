@@ -18,6 +18,8 @@ namespace SpaceWar.Classes
 
         private Rectangle collision;
 
+        private List<Bullet> bulletList;
+
         public Rectangle Collision
         {
             get { return collision; }
@@ -28,6 +30,7 @@ namespace SpaceWar.Classes
             position = new Vector2(50, 350);
             speed = 10;
             texture = null;
+            bulletList = new List<Bullet>();
         }
 
         public void LoadContent(ContentManager manager)
@@ -35,7 +38,7 @@ namespace SpaceWar.Classes
             texture = manager.Load<Texture2D>("player");
             collision = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
         }
-        public void Update()
+        public void Update(ContentManager manager)
         {
             KeyboardState keyboardState = Keyboard.GetState();
             if (keyboardState.IsKeyDown(Keys.W))
@@ -53,6 +56,13 @@ namespace SpaceWar.Classes
             if (keyboardState.IsKeyDown(Keys.D))
             {
                 position.X += speed;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.Space))
+            {
+                Bullet b = new Bullet((int)position.X, (int)position.Y);
+                b.LoadContent(manager);
+                bulletList.Add(b);
             }
 
 
@@ -76,11 +86,20 @@ namespace SpaceWar.Classes
             }
 
             collision = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
+            for (int i = 0; i < bulletList.Count; i++)
+            {
+                bulletList[i].Update();
+            }
         }
 
         public void Draw(SpriteBatch _spriteBatch)
         {
             _spriteBatch.Draw(texture, position, Color.White);
+
+            for (int i = 0; i < bulletList.Count; i++)
+            {
+                bulletList[i].Draw(_spriteBatch);
+            }
         }
     }
 }
