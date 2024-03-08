@@ -19,6 +19,7 @@ namespace SpaceWar
         private Space space;
 
         private List<Asteroid> asteroids;
+        private List<Explosion> explosions;
         private int screenWidth;
         private int screenHeight;
 
@@ -46,6 +47,7 @@ namespace SpaceWar
             player = new Player();
             space = new Space();
             asteroids = new List<Asteroid>();
+            explosions = new List<Explosion>();
             base.Initialize();
         }
 
@@ -68,7 +70,7 @@ namespace SpaceWar
             space.Update();
             UpdateAsteroid();
             CheckCollision();
-
+            UpdateExplosion(gameTime);
             base.Update(gameTime);
         }
 
@@ -88,10 +90,18 @@ namespace SpaceWar
             {
                 a.Draw(_spriteBatch);
             }
-
-
+            foreach (Explosion exp in explosions)
+            {
+                exp.Draw(_spriteBatch);
+            }
             _spriteBatch.End();
             base.Draw(gameTime);
+        }
+        private void LoadExplotion(Vector2 pos)
+        {
+            Explosion exp = new Explosion(pos);
+            exp.LoadContent(Content);
+            explosions.Add(exp);
         }
 
         private void LoadAsteroid()
@@ -100,28 +110,36 @@ namespace SpaceWar
 
             asteroid.LoadContent(Content);
 
+            bool isSpawnNormal = false;
 
-            do while (true)
-                {
-                    Random random = new Random();
-
-                    int x = random.Next(0, screenWidth - asteroid.Width);
-                    int y = random.Next(0 - screenHeight - asteroid.Height, 0);
-
-                    asteroid.Position = new Vector2(x, y);
-                }
-            foreach (Asteroid a in asteroids)
+            do
             {
-                if (asteroid.Collision.Intersects(a.Collision))
+                Random random = new Random();
+
+                int x = random.Next(0, screenWidth - asteroid.Width);
+                int y = random.Next(0 - screenHeight - asteroid.Height, 0);
+
+                asteroid.Position = new Vector2(x, y);
+                asteroid.Collision = new Rectangle(x, y, asteroid.Width, asteroid.Height);
+
+                bool flag = false;
+
+                foreach (Asteroid a in asteroids)
                 {
-                    random = new Random();
-
-                    x = random.Next(0, screenWidth - asteroid.Width);
-                    y = random.Next(0 - screenHeight - asteroid.Height, 0);
-
-                    asteroid.Position = new Vector2(x, y);
+                    if (asteroid.Collision.Intersects(a.Collision))
+                    {
+                        //если есть пересечение
+                        flag = true;
+                    }
                 }
-            }
+                //2
+                if (flag == false)
+                {
+                    isSpawnNormal = true;
+                }
+
+            } while (isSpawnNormal == false);
+
 
             asteroids.Add(asteroid);
         }
@@ -132,6 +150,7 @@ namespace SpaceWar
                 if (a.Collision.Intersects(player.Collision))
                 {
                     a.IsAlive = false;
+                    LoadExplotion(a.Position);
                 }
                 foreach (Bullet b in player.BulletList)
                 {
@@ -139,10 +158,18 @@ namespace SpaceWar
                     {
                         a.IsAlive = false;
                         b.IsAlive = false;
+                        LoadExplotion(a.Position);
                     }
                 }
             }
 
+        }
+        private void UpdateExplosion(GameTime gametime)
+        {
+            for (int i = 0; i < explosions.Count; i++)
+            {
+                explosions[i].Update(gametime);
+            }
         }
         private void UpdateAsteroid()
         {

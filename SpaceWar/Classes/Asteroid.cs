@@ -26,6 +26,7 @@ namespace SpaceWar.Classes
         public Rectangle Collision
         {
             get { return collision; }
+            set { collision = value; }
         }
         public int Height
         {
@@ -46,7 +47,7 @@ namespace SpaceWar.Classes
         {
             texture = null;
             position = new Vector2(0, 0);
-            speed = 10;//2
+            speed = 2;//2
             isAlive = true;
         }
         public Asteroid(Vector2 pos) : this() 
