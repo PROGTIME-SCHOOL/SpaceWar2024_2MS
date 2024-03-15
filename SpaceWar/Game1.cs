@@ -3,11 +3,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using SpaceWar.Classes;
+using SpaceWar.Classes.Components;
 using System;
 using SharpDX.XAudio2;
 
 namespace SpaceWar
 {
+    enum State { quit, play, settings}
     public class Game1 : Game
     {
         // Иструменты
@@ -25,6 +27,12 @@ namespace SpaceWar
 
         private int asteroidAmount;
 
+        private Label labelScore;
+
+        int score = 0;
+
+        State state = State.play;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -37,6 +45,8 @@ namespace SpaceWar
             _graphics.PreferredBackBufferHeight = screenHeight;
 
             asteroidAmount = 10;
+
+            labelScore = new Label("0", new Vector2(0, 0), Color.Red);
         }
 
         protected override void Initialize()
@@ -58,6 +68,7 @@ namespace SpaceWar
             // TODO: use this.Content to load your game content here
             player.LoadContent(Content);
             space.LoadContent(Content);
+            labelScore.LoadContent(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -71,6 +82,7 @@ namespace SpaceWar
             UpdateAsteroid();
             CheckCollision();
             UpdateExplosion(gameTime);
+            labelScore.Text = score.ToString();
             base.Update(gameTime);
         }
 
@@ -94,6 +106,8 @@ namespace SpaceWar
             {
                 exp.Draw(_spriteBatch);
             }
+
+            labelScore.Draw(_spriteBatch);
             _spriteBatch.End();
             base.Draw(gameTime);
         }
@@ -159,6 +173,7 @@ namespace SpaceWar
                         a.IsAlive = false;
                         b.IsAlive = false;
                         LoadExplotion(a.Position);
+                        score++;
                     }
                 }
             }
@@ -169,6 +184,11 @@ namespace SpaceWar
             for (int i = 0; i < explosions.Count; i++)
             {
                 explosions[i].Update(gametime);
+                if (explosions[i].IsAlive == false)
+                {
+                    explosions.Remove(explosions[i]);
+                    i--;
+                }
             }
         }
         private void UpdateAsteroid()

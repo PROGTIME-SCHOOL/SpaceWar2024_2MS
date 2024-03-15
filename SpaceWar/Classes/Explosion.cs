@@ -24,6 +24,15 @@ namespace SpaceWar.Classes
         private double duration; //длительность одного кадра
         private double totalTime;
 
+        private bool isAlive;
+
+        private bool isLoop = true;
+
+        public bool IsAlive
+        {
+            get { return isAlive; }
+        }
+
         public Explosion(Vector2 position)
         {
             this.position = position;
@@ -32,6 +41,7 @@ namespace SpaceWar.Classes
             frameNumber = 0;
             frameWidth = 117;
             frameHeight = 117;
+            isAlive = true;
         }
 
         public void LoadContent(ContentManager manager)
@@ -48,6 +58,16 @@ namespace SpaceWar.Classes
 
                 totalTime = 0;
             }
+
+            if (frameNumber == 17)
+            {
+                if (isLoop == true) 
+                {
+                    frameNumber = 0;
+                } 
+                isAlive = false;
+            }
+
             sourceRectangle = new Rectangle(frameNumber * frameWidth, 0, frameWidth, frameHeight);
 
             Debug.WriteLine($"Time: {totalTime}                          ElapsedGameTime: {gameTime.ElapsedGameTime.TotalSeconds} ");
