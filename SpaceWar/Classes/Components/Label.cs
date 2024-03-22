@@ -22,6 +22,12 @@ namespace SpaceWar.Classes.Components
             set { text = value; }
         }
 
+        public Color Color
+        {
+            get { return color; }
+            set { color = value; }
+        }
+
         public Label(string text, Vector2 position, Color color)
         {
             this.text = text;

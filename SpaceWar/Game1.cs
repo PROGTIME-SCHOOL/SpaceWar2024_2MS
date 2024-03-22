@@ -6,10 +6,10 @@ using SpaceWar.Classes;
 using SpaceWar.Classes.Components;
 using System;
 using SharpDX.XAudio2;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SpaceWar
 {
-    enum State { quit, play, settings}
     public class Game1 : Game
     {
         // Иструменты
@@ -31,7 +31,10 @@ namespace SpaceWar
 
         int score = 0;
 
-        State state = State.play;
+        private MainMenu mainMenu;
+        private GameOver gameOver;
+
+        public static GameMode gameMode;
 
         public Game1()
         {
@@ -47,6 +50,8 @@ namespace SpaceWar
             asteroidAmount = 10;
 
             labelScore = new Label("0", new Vector2(0, 0), Color.Red);
+
+           
         }
 
         protected override void Initialize()
@@ -58,6 +63,9 @@ namespace SpaceWar
             space = new Space();
             asteroids = new List<Asteroid>();
             explosions = new List<Explosion>();
+
+            mainMenu = new MainMenu();
+            gameOver = new GameOver();
             base.Initialize();
         }
 
@@ -69,6 +77,9 @@ namespace SpaceWar
             player.LoadContent(Content);
             space.LoadContent(Content);
             labelScore.LoadContent(Content);
+
+            mainMenu.LoadContent(Content);
+            gameOver.LoadContent(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -77,12 +88,38 @@ namespace SpaceWar
                 Exit();
 
             // TODO: Add your update logic here
-            player.Update(Content);
-            space.Update();
-            UpdateAsteroid();
-            CheckCollision();
-            UpdateExplosion(gameTime);
-            labelScore.Text = score.ToString();
+
+
+
+            switch (gameMode)
+            {
+                case GameMode.Menu:
+                    mainMenu.Update();
+                    break;
+                case GameMode.Playing:
+                    player.Update(Content);
+                    space.Update();
+                    UpdateAsteroid();
+                    CheckCollision();
+                    UpdateExplosion(gameTime);
+                    labelScore.Text = score.ToString();
+                    break;
+                case GameMode.GameOver:
+                    //gameOver.Update();
+                    break;
+                case GameMode.Exit:
+                    Exit();
+                    break;
+                default:
+                    break;
+            }
+
+
+            
+
+
+            
+
             base.Update(gameTime);
         }
 
@@ -94,20 +131,42 @@ namespace SpaceWar
             _spriteBatch.Begin();
 
 
-            space.Draw(_spriteBatch);
-
-            player.Draw(_spriteBatch);
-
-            foreach (Asteroid a in asteroids)
+            switch (gameMode)
             {
-                a.Draw(_spriteBatch);
-            }
-            foreach (Explosion exp in explosions)
-            {
-                exp.Draw(_spriteBatch);
+                case GameMode.Menu:
+                    mainMenu.Draw(_spriteBatch);
+                    break;
+                case GameMode.Playing:
+                    space.Draw(_spriteBatch);
+
+                    player.Draw(_spriteBatch);
+
+                    foreach (Asteroid a in asteroids)
+                    {
+                        a.Draw(_spriteBatch);
+                    }
+                    foreach (Explosion exp in explosions)
+                    {
+                        exp.Draw(_spriteBatch);
+                    }
+
+                    labelScore.Draw(_spriteBatch);
+
+                    break;
+                case GameMode.GameOver:
+                    gameOver.Draw(_spriteBatch);
+                    break;
+                case GameMode.Exit:
+                    break;
+                default:
+                    break;
             }
 
-            labelScore.Draw(_spriteBatch);
+            
+           
+
+            
+
             _spriteBatch.End();
             base.Draw(gameTime);
         }
