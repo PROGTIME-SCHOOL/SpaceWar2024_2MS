@@ -23,6 +23,14 @@ namespace SpaceWar.Classes
         private int time;
         private int maxTime;
 
+        private int health;
+
+        public event Action TakeDamage;
+
+        public int Health
+        {
+            get { return health; }
+        }
         public Rectangle Collision
         {
             get { return collision; }
@@ -39,6 +47,7 @@ namespace SpaceWar.Classes
             bulletList = new List<Bullet>();
             time = 0;
             maxTime = 60;
+            health = 10;
         }
 
         public void LoadContent(ContentManager manager)
@@ -124,6 +133,15 @@ namespace SpaceWar.Classes
             for (int i = 0; i < bulletList.Count; i++)
             {
                 bulletList[i].Draw(_spriteBatch);
+            }
+        }
+
+        public void Damage()
+        {
+            health--;
+            if(TakeDamage != null)
+            {
+                TakeDamage();
             }
         }
     }

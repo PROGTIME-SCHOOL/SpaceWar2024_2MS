@@ -27,12 +27,13 @@ namespace SpaceWar
 
         private int asteroidAmount;
 
-        private Label labelScore;
+        
 
         int score = 0;
 
         private MainMenu mainMenu;
         private GameOver gameOver;
+        private HUD hud;
 
         public static GameMode gameMode;
 
@@ -49,9 +50,9 @@ namespace SpaceWar
 
             asteroidAmount = 10;
 
-            labelScore = new Label("0", new Vector2(0, 0), Color.Red);
 
-           
+            
+            
         }
 
         protected override void Initialize()
@@ -66,6 +67,8 @@ namespace SpaceWar
 
             mainMenu = new MainMenu();
             gameOver = new GameOver();
+            hud = new HUD();
+            player.TakeDamage += hud.OnPlayerTakeDamage;
             base.Initialize();
         }
 
@@ -76,10 +79,11 @@ namespace SpaceWar
             // TODO: use this.Content to load your game content here
             player.LoadContent(Content);
             space.LoadContent(Content);
-            labelScore.LoadContent(Content);
+            
 
             mainMenu.LoadContent(Content);
             gameOver.LoadContent(Content);
+            hud.LoadContent(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -102,10 +106,10 @@ namespace SpaceWar
                     UpdateAsteroid();
                     CheckCollision();
                     UpdateExplosion(gameTime);
-                    labelScore.Text = score.ToString();
+                    hud.Update(score);
                     break;
                 case GameMode.GameOver:
-                    //gameOver.Update();
+                    gameOver.Update();
                     break;
                 case GameMode.Exit:
                     Exit();
@@ -150,8 +154,8 @@ namespace SpaceWar
                         exp.Draw(_spriteBatch);
                     }
 
-                    labelScore.Draw(_spriteBatch);
-
+                   hud.Draw(_spriteBatch);
+                   
                     break;
                 case GameMode.GameOver:
                     gameOver.Draw(_spriteBatch);
@@ -161,12 +165,6 @@ namespace SpaceWar
                 default:
                     break;
             }
-
-            
-           
-
-            
-
             _spriteBatch.End();
             base.Draw(gameTime);
         }
@@ -223,7 +221,15 @@ namespace SpaceWar
                 if (a.Collision.Intersects(player.Collision))
                 {
                     a.IsAlive = false;
+                    //уменьшение hp игрока
+                    //изменение healthbar
+                    player.Damage();
                     LoadExplotion(a.Position);
+                    if(player.Health<=0)
+                    {
+                        gameMode = GameMode.GameOver; 
+                        break;
+                    }
                 }
                 foreach (Bullet b in player.BulletList)
                 {

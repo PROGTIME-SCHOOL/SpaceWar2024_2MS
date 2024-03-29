@@ -22,6 +22,10 @@ namespace SpaceWar.Classes
         {
             label.LoadContent(contentManager);
         }
+        public void Update()
+        {
+
+        }
         public void Draw(SpriteBatch spriteBatch)
         {
             label.Draw(spriteBatch);
