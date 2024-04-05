@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace SpaceWar.Classes
 {
@@ -14,9 +15,9 @@ namespace SpaceWar.Classes
     {
         private Label label;
 
-        public GameOver()
+        public GameOver(int width, int height)
         {
-            label = new Label("GAME OVER!!!", new Vector2(200, 200), Color.White);
+            label = new Label("GAME OVER!!!", new Vector2(width / 2 - 45, height / 2), Color.White);
         }
         public void LoadContent(ContentManager contentManager)
         {
@@ -24,7 +25,10 @@ namespace SpaceWar.Classes
         }
         public void Update()
         {
-
+            if(Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                Game1.gameMode = GameMode.Menu;
+            }
         }
         public void Draw(SpriteBatch spriteBatch)
         {

@@ -24,19 +24,33 @@ namespace SpaceWar.Classes
         private KeyboardState keyboardState;
         private KeyboardState prevKeyBoardState;
 
-        public MainMenu()
+        public MainMenu(int width, int height)
         {
             selected = 0;
             selectedColor = Color.Black;
 
-            buttonList.Add(new Label("Play", new Vector2(50, 50), Color.White));
-            buttonList.Add(new Label("Exit", new Vector2(50, 100), Color.White));
+            buttonList.Add(new Label("Play", Color.White));
+            buttonList.Add(new Label("Exit", Color.White));
             //buttonList.Add(new Label("Exit", new Vector2(50, 150), Color.White));
             //buttonList.Add(new Label("Exit", new Vector2(50, 200), Color.White));
             //buttonList.Add(new Label("Exit", new Vector2(50, 250), Color.White));
             //buttonList.Add(new Label("Exit", new Vector2(50, 300), Color.White));
             //buttonList.Add(new Label("Exit", new Vector2(50, 350), Color.White));
             //buttonList.Add(new Label("Exit", new Vector2(50, 400), Color.White));
+            int centerY = height / 2;
+            if (buttonList.Count  % 2==0)
+            {
+                centerY = centerY - (35 * buttonList.Count / 2);
+            }
+            else
+            {
+                centerY = centerY - (35 * (buttonList.Count - 1) / 2) - 15;
+            }
+            for (int i = 0; i < buttonList.Count; i++)
+            {
+                buttonList[i].Position = new Vector2(width/2 -20, centerY);
+                centerY = centerY + 35;
+            }
         }
 
         public void LoadContent(ContentManager contentManager)
@@ -74,7 +88,7 @@ namespace SpaceWar.Classes
             {
                 if (selected == 0)//Start
                 {
-                    Game1.gameMode = GameMode.Playing;
+                    Game1.gameMode = GameMode.PlaingPrapare;
                 }
                 else if (selected == 1)//Exit
                 {

@@ -61,10 +61,10 @@ namespace SpaceWar.Classes
 
             if (frameNumber == 17)
             {
-                if (isLoop == true) 
+                if (isLoop == true)
                 {
                     frameNumber = 0;
-                } 
+                }
                 isAlive = false;
             }
 
@@ -74,7 +74,8 @@ namespace SpaceWar.Classes
         }
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, sourceRectangle, Color.White);
+            spriteBatch.Draw(texture, new Vector2(position.X - frameWidth / 2 + 22, position.Y), sourceRectangle, Color.White);
+            //  new Vector2(position.X - texture.Width / 2, position.Y - texture.Height / 2)
         }
     }
 }

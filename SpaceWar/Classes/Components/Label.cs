@@ -28,11 +28,25 @@ namespace SpaceWar.Classes.Components
             set { color = value; }
         }
 
+        public Vector2 Position
+        {
+            get { return position; }
+            set { position = value; }
+        }
+
         public Label(string text, Vector2 position, Color color)
         {
             this.text = text;
             this.position = position;
             this.color = color;
+
+            spriteFont = null;
+        }
+        public Label(string text, Color color)
+        {
+            this.text = text;
+            this.color = color;
+            position = new Vector2(0, 0);
 
             spriteFont = null;
         }

@@ -59,17 +59,27 @@ namespace SpaceWar
         {
             // TODO: Add your initialization logic here
 
+                                                               //
+            player = new Player();                             //   да !!!
+            space = new Space();                               //   да !!!
+            asteroids = new List<Asteroid>();                  //   да !!!
+            explosions = new List<Explosion>();                //   да !!!
+                                                               //
+            mainMenu = new MainMenu(screenWidth, screenHeight);//   нет
+            gameOver = new GameOver(screenWidth, screenHeight);//   нет
+            hud = new HUD();                                   //   да
+            player.TakeDamage += hud.OnPlayerTakeDamage;       //   нет
+            base.Initialize();                                 //
+        }
 
-            player = new Player();
-            space = new Space();
+        private void Restart()
+        {
+            player.Reset();
+            space.Reset();
             asteroids = new List<Asteroid>();
             explosions = new List<Explosion>();
-
-            mainMenu = new MainMenu();
-            gameOver = new GameOver();
-            hud = new HUD();
-            player.TakeDamage += hud.OnPlayerTakeDamage;
-            base.Initialize();
+            hud.Reset();
+            score = 0;
         }
 
         protected override void LoadContent()
@@ -88,8 +98,8 @@ namespace SpaceWar
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                //Exit();
 
             // TODO: Add your update logic here
 
@@ -99,6 +109,10 @@ namespace SpaceWar
             {
                 case GameMode.Menu:
                     mainMenu.Update();
+                    break;
+                case GameMode.PlaingPrapare:
+                    Restart();
+                    gameMode = GameMode.Playing;
                     break;
                 case GameMode.Playing:
                     player.Update(Content);

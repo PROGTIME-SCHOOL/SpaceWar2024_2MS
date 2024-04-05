@@ -21,9 +21,7 @@ namespace SpaceWar.Classes
         public Space()
         {
             texture = null;
-            position1 = new Vector2(0, 0);
-            position2 = new Vector2(0, -950);
-            speed = 1;
+            Reset();
         }
 
         public void LoadContent(ContentManager manager)
@@ -47,6 +45,13 @@ namespace SpaceWar.Classes
                 position1.Y = 0;
                 position2.Y = -950;
             }
+        }
+
+        public void Reset()
+        {
+            position1 = new Vector2(0, 0);
+            position2 = new Vector2(0, -950);
+            speed = 1;
         }
     }
 }

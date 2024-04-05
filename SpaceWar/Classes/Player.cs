@@ -41,13 +41,8 @@ namespace SpaceWar.Classes
         }
         public Player()
         {
-            position = new Vector2(50, 350);
-            speed = 10;
+            Reset();
             texture = null;
-            bulletList = new List<Bullet>();
-            time = 0;
-            maxTime = 60;
-            health = 10;
         }
 
         public void LoadContent(ContentManager manager)
@@ -134,6 +129,16 @@ namespace SpaceWar.Classes
             {
                 bulletList[i].Draw(_spriteBatch);
             }
+        }
+
+        public void Reset()
+        {
+            position = new Vector2(50, 350);
+            speed = 10;
+            bulletList = new List<Bullet>();
+            time = 0;
+            maxTime = 60;
+            health = 10;
         }
 
         public void Damage()
