@@ -279,16 +279,9 @@ namespace SpaceWar
                 a.Update();
 
                 //teleport
-                if (a.Position.Y > screenHeight + 50)
-                {
-                    Random random = new Random();
-
-                    int x = random.Next(0, screenWidth - a.Width);
-                    int y = random.Next(0 - screenHeight - a.Height, 0);
-
-                    a.Position = new Vector2(x, y);
-                }
-                if (a.IsAlive == false)
+                // Можно просто его заново заспунить через LoadAsteroid, тк до этого не было проверки
+                // при переносе астероида на вверх на пересечение
+                if (a.Position.Y > screenHeight + 50 || a.IsAlive == false)
                 {
                     asteroids.RemoveAt(i);
                     i--;
