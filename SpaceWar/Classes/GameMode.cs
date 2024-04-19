@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace SpaceWar.Classes
 {
-    public enum GameMode { Menu, PlaingPrapare, Playing, GameOver, Exit }
+    public enum GameMode { Menu, Pause, PlaingPrapare, Playing, GameOver, Exit }
 }

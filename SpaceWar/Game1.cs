@@ -7,6 +7,7 @@ using SpaceWar.Classes.Components;
 using System;
 using SharpDX.XAudio2;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Microsoft.Xna.Framework.Media;
 
 namespace SpaceWar
 {
@@ -32,6 +33,7 @@ namespace SpaceWar
         int score = 0;
 
         private MainMenu mainMenu;
+        private PauseMenu pauseMenu;
         private GameOver gameOver;
         private HUD hud;
 
@@ -66,6 +68,7 @@ namespace SpaceWar
             explosions = new List<Explosion>();                //   да !!!
                                                                //
             mainMenu = new MainMenu(screenWidth, screenHeight);//   нет
+            pauseMenu = new PauseMenu(screenWidth, screenHeight);
             gameOver = new GameOver(screenWidth, screenHeight);//   нет
             hud = new HUD();                                   //   да
             player.TakeDamage += hud.OnPlayerTakeDamage;       //   нет
@@ -93,6 +96,7 @@ namespace SpaceWar
             
 
             mainMenu.LoadContent(Content);
+            pauseMenu.LoadContent(Content);
             gameOver.LoadContent(Content);
             hud.LoadContent(Content);
         }
@@ -116,6 +120,10 @@ namespace SpaceWar
                     Restart();
                     gameMode = GameMode.Playing;
                     break;
+                case GameMode.Pause:
+                    space.Update();
+                    pauseMenu.Update();
+                    break;
                 case GameMode.Playing:
                     player.Update(Content);
                     space.Update();
@@ -123,6 +131,11 @@ namespace SpaceWar
                     CheckCollision();
                     UpdateExplosion(gameTime);
                     hud.Update(score);
+
+                    if (Keyboard.GetState().IsKeyDown(Keys.Escape) == true)
+                    {
+                        gameMode = GameMode.Pause;
+                    }
                     break;
                 case GameMode.GameOver:
                     gameOver.Update();
@@ -155,8 +168,11 @@ namespace SpaceWar
             {
                 case GameMode.Menu:
                     space.Draw(_spriteBatch);
-
                     mainMenu.Draw(_spriteBatch);
+                    break;
+                case GameMode.Pause:
+                    space.Draw(_spriteBatch);
+                    pauseMenu.Draw(_spriteBatch);
                     break;
                 case GameMode.Playing:
                     space.Draw(_spriteBatch);
