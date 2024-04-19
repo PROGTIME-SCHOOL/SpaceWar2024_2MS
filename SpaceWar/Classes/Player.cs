@@ -25,6 +25,8 @@ namespace SpaceWar.Classes
 
         private int health;
 
+        private Shelt shelt;
+
         public event Action TakeDamage;
 
         public int Health
@@ -39,8 +41,14 @@ namespace SpaceWar.Classes
         {
             get { return bulletList; }
         }
+
+        public event Action<int> SheltUse;
+
         public Player()
         {
+            shelt = new Shelt();
+            shelt.SheltUse += OnSheltUse;
+
             Reset();
             texture = null;
         }
@@ -49,9 +57,25 @@ namespace SpaceWar.Classes
         {
             texture = manager.Load<Texture2D>("player");
             collision = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
+
+            shelt.LoadContent(manager);
         }
         public void Update(ContentManager manager)
         {
+            int width;
+            int height;
+
+            if (shelt.IsActive)
+            {
+                width = shelt.Width;
+                height = shelt.Height;
+            }
+            else
+            {
+                width = texture.Width;
+                height = texture.Height;
+            }
+
             time++;
             KeyboardState keyboardState = Keyboard.GetState();
             if (keyboardState.IsKeyDown(Keys.W))
@@ -75,7 +99,8 @@ namespace SpaceWar.Classes
             {
                 Bullet b = new Bullet(5,5);
                 b.LoadContent(manager);
-                b.Position = new Vector2((int)position.X + texture.Width / 2 - b.Width / 2, (int)position.Y);
+
+                b.Position = new Vector2((int)position.X + width / 2 - b.Width / 2, (int)position.Y);
                 bulletList.Add(b);
                 time = 0;
             }
@@ -104,26 +129,37 @@ namespace SpaceWar.Classes
                 position.Y = 0;
             }
 
-            if (position.X + texture.Width > 800)
+            if (position.X + width > 800)
             {
-                position.X = 800 - texture.Width;
+                position.X = 800 - width;
             }
 
-            if (position.Y + texture.Height > 600)
+            if (position.Y + height > 600)
             {
-                position.Y = 600 - texture.Height;
+                position.Y = 600 - height;
             }
 
-            collision = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
+            collision = new Rectangle((int)position.X, (int)position.Y, width, height);
+
             for (int i = 0; i < bulletList.Count; i++)
             {
                 bulletList[i].Update();
             }
+
+            shelt.Update();
         }
 
         public void Draw(SpriteBatch _spriteBatch)
         {
-            _spriteBatch.Draw(texture, position, Color.White);
+            if (shelt.IsActive)
+            {
+                _spriteBatch.Draw(shelt.Texture, collision, Color.White);
+            }
+            else
+            {
+                _spriteBatch.Draw(texture, collision, Color.White);
+            }
+            
 
             for (int i = 0; i < bulletList.Count; i++)
             {
@@ -139,14 +175,27 @@ namespace SpaceWar.Classes
             time = 0;
             maxTime = 60;
             health = 10;
+
+            shelt.Reset();
         }
 
         public void Damage()
         {
+            if (shelt.IsActive)
+                return;
+
             health--;
             if(TakeDamage != null)
             {
                 TakeDamage();
+            }
+        }
+
+        public void OnSheltUse(int percent)
+        {
+            if (SheltUse != null)
+            {
+                SheltUse(percent);
             }
         }
     }

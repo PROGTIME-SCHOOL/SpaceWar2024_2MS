@@ -69,6 +69,7 @@ namespace SpaceWar
             gameOver = new GameOver(screenWidth, screenHeight);//   нет
             hud = new HUD();                                   //   да
             player.TakeDamage += hud.OnPlayerTakeDamage;       //   нет
+            player.SheltUse += hud.OnSheltUse;
             base.Initialize();                                 //
         }
 
