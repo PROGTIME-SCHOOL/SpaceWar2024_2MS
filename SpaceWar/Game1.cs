@@ -110,6 +110,7 @@ namespace SpaceWar
             {
                 case GameMode.Menu:
                     mainMenu.Update();
+                    space.Update();
                     break;
                 case GameMode.PlaingPrapare:
                     Restart();
@@ -153,6 +154,8 @@ namespace SpaceWar
             switch (gameMode)
             {
                 case GameMode.Menu:
+                    space.Draw(_spriteBatch);
+
                     mainMenu.Draw(_spriteBatch);
                     break;
                 case GameMode.Playing:
