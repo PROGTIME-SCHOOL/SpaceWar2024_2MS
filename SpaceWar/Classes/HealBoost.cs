@@ -19,6 +19,7 @@ namespace SpaceWar.Classes
         private bool isVisible;
         private Rectangle collision;
 
+        private Random random;
         private int timer;
 
         public Rectangle Collision
@@ -34,6 +35,7 @@ namespace SpaceWar.Classes
 
         public HealBoost()
         {
+            random = new Random();
             texture = null;
 
             Reset();
@@ -41,9 +43,9 @@ namespace SpaceWar.Classes
 
         public void Reset()
         {
-            position = new Vector2(new Random().Next(0,  750), -50);
+            position = new Vector2(random.Next(0,  750), -50);
             isVisible = false;
-            timer = 0;
+            timer = random.Next(0, TimeRespawn + 1);
         }
 
         public void LoadContent(ContentManager content)
@@ -69,7 +71,7 @@ namespace SpaceWar.Classes
 
             if (isVisible == false)
             {
-                if (timer == TimeRespawn)
+                if (timer >= TimeRespawn)
                 {
                     timer = 0;
                     isVisible = true;

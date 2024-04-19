@@ -64,7 +64,7 @@ namespace SpaceWar.Classes
                 }
             }
 
-            if (timer > 0)
+            if (timer > 0 && !isCanUse)
             {
                 timer--;
             }
@@ -83,7 +83,7 @@ namespace SpaceWar.Classes
                 }
             }    
 
-            if (timer == 0 && !isCanUse && !isActive)
+            if (timer <= 0 && !isCanUse && !isActive)
             {
                 timer = TimeRegenerate;
             }

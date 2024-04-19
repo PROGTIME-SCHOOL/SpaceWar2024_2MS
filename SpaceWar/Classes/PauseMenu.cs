@@ -46,7 +46,7 @@ namespace SpaceWar.Classes
 
             for (int i = 0; i < buttonList.Count; i++)
             {
-                buttonList[i].Position = new Vector2(width / 2 - 20, centerY);
+                buttonList[i].Position = new Vector2(width / 2, centerY);
                 centerY = centerY + 35;
             }
         }
@@ -56,6 +56,10 @@ namespace SpaceWar.Classes
             foreach (var button in buttonList)
             {
                 button.LoadContent(contentManager);
+
+                Vector2 sizeText = button.SizeString(button.Text);
+
+                button.Position = new Vector2(button.Position.X - sizeText.X / 2, button.Position.Y);
             }
         }
 
