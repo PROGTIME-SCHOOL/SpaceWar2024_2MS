@@ -179,6 +179,12 @@ namespace SpaceWar.Classes
             shelt.Reset();
         }
 
+        public void Heal()
+        {
+            health = 10;
+
+        }
+
         public void Damage()
         {
             if (shelt.IsActive)

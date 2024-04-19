@@ -21,6 +21,8 @@ namespace SpaceWar
         private Player player;
         private Space space;
 
+        private HealBoost heal;
+
         private List<Asteroid> asteroids;
         private List<Explosion> explosions;
         private int screenWidth;
@@ -64,6 +66,7 @@ namespace SpaceWar
                                                                //
             player = new Player();                             //   да !!!
             space = new Space();                               //   да !!!
+            heal = new HealBoost();
             asteroids = new List<Asteroid>();                  //   да !!!
             explosions = new List<Explosion>();                //   да !!!
                                                                //
@@ -80,6 +83,7 @@ namespace SpaceWar
         {
             player.Reset();
             space.Reset();
+            heal.Reset();
             asteroids = new List<Asteroid>();
             explosions = new List<Explosion>();
             hud.Reset();
@@ -93,7 +97,7 @@ namespace SpaceWar
             // TODO: use this.Content to load your game content here
             player.LoadContent(Content);
             space.LoadContent(Content);
-            
+            heal.LoadContent(Content);
 
             mainMenu.LoadContent(Content);
             pauseMenu.LoadContent(Content);
@@ -127,6 +131,7 @@ namespace SpaceWar
                 case GameMode.Playing:
                     player.Update(Content);
                     space.Update();
+                    heal.Update();
                     UpdateAsteroid();
                     CheckCollision();
                     UpdateExplosion(gameTime);
@@ -178,6 +183,8 @@ namespace SpaceWar
                     space.Draw(_spriteBatch);
 
                     player.Draw(_spriteBatch);
+
+                    heal.Draw(_spriteBatch);
 
                     foreach (Asteroid a in asteroids)
                     {
@@ -277,6 +284,12 @@ namespace SpaceWar
                 }
             }
 
+            if (heal.Collision.Intersects(player.Collision))
+            {
+                heal.Reset();
+                player.Heal();
+                hud.OnPlayerHealed();
+            }
         }
         private void UpdateExplosion(GameTime gametime)
         {
