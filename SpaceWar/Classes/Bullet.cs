@@ -61,7 +61,7 @@ namespace SpaceWar.Classes
 
         public void LoadContent(ContentManager manager)
         {
-            texture = manager.Load<Texture2D>("asteroid");
+            texture = manager.Load<Texture2D>("playerBullet");
         }
         public void Update()
         {
