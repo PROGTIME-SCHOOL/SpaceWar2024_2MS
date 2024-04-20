@@ -7,6 +7,7 @@ using SpaceWar.Classes.Components;
 using System;
 using SharpDX.XAudio2;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Microsoft.Xna.Framework.Media;
 
 namespace SpaceWar
 {
@@ -20,6 +21,8 @@ namespace SpaceWar
         private Player player;
         private Space space;
 
+        private HealBoost heal;
+
         private List<Asteroid> asteroids;
         private List<Explosion> explosions;
         private int screenWidth;
@@ -32,6 +35,7 @@ namespace SpaceWar
         int score = 0;
 
         private MainMenu mainMenu;
+        private PauseMenu pauseMenu;
         private GameOver gameOver;
         private HUD hud;
 
@@ -62,13 +66,16 @@ namespace SpaceWar
                                                                //
             player = new Player();                             //   да !!!
             space = new Space();                               //   да !!!
+            heal = new HealBoost();
             asteroids = new List<Asteroid>();                  //   да !!!
             explosions = new List<Explosion>();                //   да !!!
                                                                //
             mainMenu = new MainMenu(screenWidth, screenHeight);//   нет
+            pauseMenu = new PauseMenu(screenWidth, screenHeight);
             gameOver = new GameOver(screenWidth, screenHeight);//   нет
             hud = new HUD();                                   //   да
             player.TakeDamage += hud.OnPlayerTakeDamage;       //   нет
+            player.SheltUse += hud.OnSheltUse;
             base.Initialize();                                 //
         }
 
@@ -76,6 +83,7 @@ namespace SpaceWar
         {
             player.Reset();
             space.Reset();
+            heal.Reset();
             asteroids = new List<Asteroid>();
             explosions = new List<Explosion>();
             hud.Reset();
@@ -89,9 +97,10 @@ namespace SpaceWar
             // TODO: use this.Content to load your game content here
             player.LoadContent(Content);
             space.LoadContent(Content);
-            
+            heal.LoadContent(Content);
 
             mainMenu.LoadContent(Content);
+            pauseMenu.LoadContent(Content);
             gameOver.LoadContent(Content);
             hud.LoadContent(Content);
         }
@@ -109,18 +118,29 @@ namespace SpaceWar
             {
                 case GameMode.Menu:
                     mainMenu.Update();
+                    space.Update();
                     break;
                 case GameMode.PlaingPrapare:
                     Restart();
                     gameMode = GameMode.Playing;
                     break;
+                case GameMode.Pause:
+                    space.Update();
+                    pauseMenu.Update();
+                    break;
                 case GameMode.Playing:
                     player.Update(Content);
                     space.Update();
+                    heal.Update();
                     UpdateAsteroid();
                     CheckCollision();
                     UpdateExplosion(gameTime);
                     hud.Update(score);
+
+                    if (Keyboard.GetState().IsKeyDown(Keys.Escape) == true)
+                    {
+                        gameMode = GameMode.Pause;
+                    }
                     break;
                 case GameMode.GameOver:
                     gameOver.Update();
@@ -152,12 +172,19 @@ namespace SpaceWar
             switch (gameMode)
             {
                 case GameMode.Menu:
+                    space.Draw(_spriteBatch);
                     mainMenu.Draw(_spriteBatch);
+                    break;
+                case GameMode.Pause:
+                    space.Draw(_spriteBatch);
+                    pauseMenu.Draw(_spriteBatch);
                     break;
                 case GameMode.Playing:
                     space.Draw(_spriteBatch);
 
                     player.Draw(_spriteBatch);
+
+                    heal.Draw(_spriteBatch);
 
                     foreach (Asteroid a in asteroids)
                     {
@@ -257,6 +284,12 @@ namespace SpaceWar
                 }
             }
 
+            if (heal.Collision.Intersects(player.Collision))
+            {
+                heal.Reset();
+                player.Heal();
+                hud.OnPlayerHealed();
+            }
         }
         private void UpdateExplosion(GameTime gametime)
         {
@@ -279,16 +312,9 @@ namespace SpaceWar
                 a.Update();
 
                 //teleport
-                if (a.Position.Y > screenHeight + 50)
-                {
-                    Random random = new Random();
-
-                    int x = random.Next(0, screenWidth - a.Width);
-                    int y = random.Next(0 - screenHeight - a.Height, 0);
-
-                    a.Position = new Vector2(x, y);
-                }
-                if (a.IsAlive == false)
+                // Можно просто его заново заспунить через LoadAsteroid, тк до этого не было проверки
+                // при переносе астероида на вверх на пересечение
+                if (a.Position.Y > screenHeight + 50 || a.IsAlive == false)
                 {
                     asteroids.RemoveAt(i);
                     i--;

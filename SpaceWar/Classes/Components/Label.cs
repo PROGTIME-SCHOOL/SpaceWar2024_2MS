@@ -56,6 +56,11 @@ namespace SpaceWar.Classes.Components
             spriteFont = manager.Load<SpriteFont>("GameFont");
         }
 
+        public Vector2 SizeString(string text)
+        {
+            return spriteFont.MeasureString(text);
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.DrawString(spriteFont, text, position, color);

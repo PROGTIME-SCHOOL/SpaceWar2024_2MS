@@ -13,7 +13,7 @@ using SpaceWar.Classes.Components;
 
 namespace SpaceWar.Classes
 {
-    class MainMenu
+    public class PauseMenu
     {
         private List<Label> buttonList = new List<Label>();
 
@@ -24,21 +24,18 @@ namespace SpaceWar.Classes
         private KeyboardState keyboardState;
         private KeyboardState prevKeyBoardState;
 
-        public MainMenu(int width, int height)
+        public PauseMenu(int width, int height)
         {
             selected = 0;
-            selectedColor = Color.Black;
+            selectedColor = Color.Yellow;
 
-            buttonList.Add(new Label("Play", Color.White));
-            buttonList.Add(new Label("Exit", Color.White));
-            //buttonList.Add(new Label("Exit", new Vector2(50, 150), Color.White));
-            //buttonList.Add(new Label("Exit", new Vector2(50, 200), Color.White));
-            //buttonList.Add(new Label("Exit", new Vector2(50, 250), Color.White));
-            //buttonList.Add(new Label("Exit", new Vector2(50, 300), Color.White));
-            //buttonList.Add(new Label("Exit", new Vector2(50, 350), Color.White));
-            //buttonList.Add(new Label("Exit", new Vector2(50, 400), Color.White));
+            buttonList.Add(new Label("Continue", Color.White));
+            buttonList.Add(new Label("Save Game (In progress)", Color.White));
+            buttonList.Add(new Label("Exit in menu", Color.White));
+
             int centerY = height / 2;
-            if (buttonList.Count  % 2==0)
+
+            if (buttonList.Count % 2 == 0)
             {
                 centerY = centerY - (35 * buttonList.Count / 2);
             }
@@ -46,9 +43,10 @@ namespace SpaceWar.Classes
             {
                 centerY = centerY - (35 * (buttonList.Count - 1) / 2) - 15;
             }
+
             for (int i = 0; i < buttonList.Count; i++)
             {
-                buttonList[i].Position = new Vector2(width/2 -20, centerY);
+                buttonList[i].Position = new Vector2(width / 2, centerY);
                 centerY = centerY + 35;
             }
         }
@@ -58,6 +56,10 @@ namespace SpaceWar.Classes
             foreach (var button in buttonList)
             {
                 button.LoadContent(contentManager);
+
+                Vector2 sizeText = button.SizeString(button.Text);
+
+                button.Position = new Vector2(button.Position.X - sizeText.X / 2, button.Position.Y);
             }
         }
 
@@ -65,13 +67,16 @@ namespace SpaceWar.Classes
         {
             keyboardState = Keyboard.GetState();
 
-            if (CheckKeyBoard(Keys.S))//только что отпустил
+            if (CheckKeyBoard(Keys.S)) //только что отпустил
             {
                 if (selected < buttonList.Count - 1)
                 {
                     selected = selected + 1;
                 }
-
+                else // Зацикливаем
+                {
+                    selected = 0;
+                }
             }
 
             if (CheckKeyBoard(Keys.W))
@@ -80,22 +85,30 @@ namespace SpaceWar.Classes
                 {
                     selected = selected - 1;
                 }
-            }
-
-            //Click key->Enter
-            if (CheckKeyBoard(Keys.Enter))
-            {
-                if (selected == 0)//Start
+                else
                 {
-                    Game1.gameMode = GameMode.PlaingPrapare;
-                }
-                else if (selected == 1)//Exit
-                {
-                    Game1.gameMode = GameMode.Exit;
+                    selected = buttonList.Count - 1;
                 }
             }
 
             prevKeyBoardState = keyboardState;
+
+            //Click key->Enter
+            if (keyboardState.IsKeyDown(Keys.Enter))
+            {
+                if (selected == 0)// Continue
+                {
+                    Game1.gameMode = GameMode.Playing;
+                }
+                else if (selected == 1) // Save
+                {
+                    // Waiting new update...
+                }
+                else if (selected == 2)
+                {
+                    Game1.gameMode = GameMode.Menu;
+                }
+            }
         }
 
         public bool CheckKeyBoard(Keys key)

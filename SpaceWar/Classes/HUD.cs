@@ -14,14 +14,17 @@ namespace SpaceWar.Classes
     class HUD
     {
         private HealthBar healthBar;
+        private SheltBar sheltBar;
         private Label labelScore;
         private Label labelScoreText;
         public void LoadContent(ContentManager contentManager)
         {
-            healthBar = new HealthBar(new Vector2(680, 580), 100, 10);
+            healthBar = new HealthBar(new Vector2(680, 560), 100, 10);
+            sheltBar = new SheltBar(new Vector2(680, 580), 100, 10);
             labelScore = new Label("Score: 0", new Vector2(5, 0), Color.Red);
             //labelScoreText = new Label("Score: ", new Vector2(0,0),Color.Red);
             healthBar.LoadContent(contentManager);
+            sheltBar.LoadContent(contentManager);
             labelScore.LoadContent(contentManager);
             //labelScoreText.LoadContent(contentManager);
         }
@@ -32,6 +35,7 @@ namespace SpaceWar.Classes
         public void Draw(SpriteBatch spriteBatch)
         {
             healthBar.Draw(spriteBatch);
+            sheltBar.Draw(spriteBatch);
             labelScore.Draw(spriteBatch);
             //labelScoreText.Draw(spriteBatch);
         }
@@ -40,9 +44,20 @@ namespace SpaceWar.Classes
             healthBar.Width = healthBar.Width - 10;
         }
 
+        public void OnPlayerHealed()
+        {
+            healthBar.Width = 100;
+        }
+
+        public void OnSheltUse(int percent)
+        {
+            sheltBar.Width = percent;
+        }
+
         public void Reset()
         {
             healthBar.Width = 100;
+            sheltBar.Width = 100;
             labelScore.Text = "Score: 0";
         }
     }
