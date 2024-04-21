@@ -16,6 +16,8 @@ namespace SpaceWar.Classes
         private int width;
         private int height;
         private bool isAlive;
+        private Vector2 vectorDirection;
+        private Vector2 vectorVelocity;
 
         public Vector2 Position
         {
@@ -53,19 +55,25 @@ namespace SpaceWar.Classes
             height = 20;
             destinationRactangle = new Rectangle(0, 0, width, height);
             isAlive = true;
+            vectorDirection = new Vector2(0, -1);
+            vectorVelocity = new Vector2(3, 3);
         }
-        public Bullet(int x, int y) : this()
+        public Bullet(int x, int y, Vector2 vectorDirection) : this()
         {
             destinationRactangle = new Rectangle(x, y, width, height);
+            this.vectorDirection = vectorDirection;
         }
 
         public void LoadContent(ContentManager manager)
         {
-            texture = manager.Load<Texture2D>("asteroid");
+            texture = manager.Load<Texture2D>("playerBullet");
         }
         public void Update()
         {
-            destinationRactangle.Y -= 3;
+            Position += vectorVelocity * vectorDirection;
+            destinationRactangle.X = (int)Position.X;
+            destinationRactangle .Y = (int)Position.Y;
+
 
             if (Position.Y < 0 - height - 5)
             {

@@ -27,10 +27,6 @@ namespace SpaceWar
 
         private int asteroidAmount;
 
-        
-
-        int score = 0;
-
         private MainMenu mainMenu;
         private GameOver gameOver;
         private HUD hud;
@@ -51,15 +47,15 @@ namespace SpaceWar
             asteroidAmount = 10;
 
 
-            
-            
+
+
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
 
-                                                               //
+            //
             player = new Player();                             //   да !!!
             space = new Space();                               //   да !!!
             asteroids = new List<Asteroid>();                  //   да !!!
@@ -69,17 +65,18 @@ namespace SpaceWar
             gameOver = new GameOver(screenWidth, screenHeight);//   нет
             hud = new HUD();                                   //   да
             player.TakeDamage += hud.OnPlayerTakeDamage;       //   нет
+            player.ScoreUpdate += hud.OnPlayerScoreChanged;
+            player.ShieldUse += hud.OnShieldUsed;
             base.Initialize();                                 //
         }
 
         private void Restart()
         {
-            player.Reset();
+            player.Reset(new Vector2(screenWidth / 2, screenHeight / 2));
             space.Reset();
             asteroids = new List<Asteroid>();
             explosions = new List<Explosion>();
             hud.Reset();
-            score = 0;
         }
 
         protected override void LoadContent()
@@ -89,17 +86,19 @@ namespace SpaceWar
             // TODO: use this.Content to load your game content here
             player.LoadContent(Content);
             space.LoadContent(Content);
-            
+
 
             mainMenu.LoadContent(Content);
             gameOver.LoadContent(Content);
             hud.LoadContent(Content);
+
+            Restart();
         }
 
         protected override void Update(GameTime gameTime)
         {
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                //Exit();
+            //Exit();
 
             // TODO: Add your update logic here
 
@@ -120,7 +119,6 @@ namespace SpaceWar
                     UpdateAsteroid();
                     CheckCollision();
                     UpdateExplosion(gameTime);
-                    hud.Update(score);
                     break;
                 case GameMode.GameOver:
                     gameOver.Update();
@@ -133,10 +131,10 @@ namespace SpaceWar
             }
 
 
-            
 
 
-            
+
+
 
             base.Update(gameTime);
         }
@@ -168,8 +166,8 @@ namespace SpaceWar
                         exp.Draw(_spriteBatch);
                     }
 
-                   hud.Draw(_spriteBatch);
-                   
+                    hud.Draw(_spriteBatch);
+
                     break;
                 case GameMode.GameOver:
                     gameOver.Draw(_spriteBatch);
@@ -239,9 +237,9 @@ namespace SpaceWar
                     //изменение healthbar
                     player.Damage();
                     LoadExplotion(a.Position);
-                    if(player.Health<=0)
+                    if (player.Health <= 0)
                     {
-                        gameMode = GameMode.GameOver; 
+                        gameMode = GameMode.GameOver;
                         break;
                     }
                 }
@@ -252,7 +250,7 @@ namespace SpaceWar
                         a.IsAlive = false;
                         b.IsAlive = false;
                         LoadExplotion(a.Position);
-                        score++;
+                        player.AddScore();
                     }
                 }
             }
@@ -279,16 +277,7 @@ namespace SpaceWar
                 a.Update();
 
                 //teleport
-                if (a.Position.Y > screenHeight + 50)
-                {
-                    Random random = new Random();
-
-                    int x = random.Next(0, screenWidth - a.Width);
-                    int y = random.Next(0 - screenHeight - a.Height, 0);
-
-                    a.Position = new Vector2(x, y);
-                }
-                if (a.IsAlive == false)
+                if (a.Position.Y > screenHeight + 50 || a.IsAlive == false)
                 {
                     asteroids.RemoveAt(i);
                     i--;

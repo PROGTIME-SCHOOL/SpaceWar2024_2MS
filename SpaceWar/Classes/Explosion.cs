@@ -28,6 +28,8 @@ namespace SpaceWar.Classes
 
         private bool isLoop = true;
 
+        private int speed;
+
         public bool IsAlive
         {
             get { return isAlive; }
@@ -41,6 +43,7 @@ namespace SpaceWar.Classes
             frameNumber = 0;
             frameWidth = 117;
             frameHeight = 117;
+            speed = 2;
             isAlive = true;
         }
 
@@ -50,6 +53,7 @@ namespace SpaceWar.Classes
         }
         public void Update(GameTime gameTime)
         {
+            position.Y += speed;
             totalTime += gameTime.ElapsedGameTime.TotalSeconds;
 
             if (totalTime > duration)
