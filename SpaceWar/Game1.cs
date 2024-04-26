@@ -29,6 +29,7 @@ namespace SpaceWar
 
         private MainMenu mainMenu;
         private GameOver gameOver;
+        private PauseMenu pauseMenu;
         private HUD hud;
 
         public static GameMode gameMode;
@@ -63,6 +64,7 @@ namespace SpaceWar
                                                                //
             mainMenu = new MainMenu(screenWidth, screenHeight);//   нет
             gameOver = new GameOver(screenWidth, screenHeight);//   нет
+            pauseMenu = new PauseMenu(screenWidth, screenHeight);
             hud = new HUD();                                   //   да
             player.TakeDamage += hud.OnPlayerTakeDamage;       //   нет
             player.ScoreUpdate += hud.OnPlayerScoreChanged;
@@ -90,6 +92,7 @@ namespace SpaceWar
 
             mainMenu.LoadContent(Content);
             gameOver.LoadContent(Content);
+            pauseMenu.LoadContent(Content);
             hud.LoadContent(Content);
 
             Restart();
@@ -109,6 +112,10 @@ namespace SpaceWar
                 case GameMode.Menu:
                     mainMenu.Update();
                     break;
+                case GameMode.Pause:
+                    pauseMenu.Update();
+                    space.Update();
+                    break;
                 case GameMode.PlaingPrapare:
                     Restart();
                     gameMode = GameMode.Playing;
@@ -119,6 +126,10 @@ namespace SpaceWar
                     UpdateAsteroid();
                     CheckCollision();
                     UpdateExplosion(gameTime);
+                    if(Keyboard.GetState().IsKeyDown(Keys.Escape))
+                    {
+                        gameMode = GameMode.Pause;
+                    }
                     break;
                 case GameMode.GameOver:
                     gameOver.Update();
@@ -151,6 +162,24 @@ namespace SpaceWar
             {
                 case GameMode.Menu:
                     mainMenu.Draw(_spriteBatch);
+                    break;
+                case GameMode.Pause:
+                    space.Draw(_spriteBatch);
+
+                    player.Draw(_spriteBatch);
+
+                    foreach (Asteroid a in asteroids)
+                    {
+                        a.Draw(_spriteBatch);
+                    }
+                    foreach (Explosion exp in explosions)
+                    {
+                        exp.Draw(_spriteBatch);
+                    }
+
+
+
+                    pauseMenu.Draw(_spriteBatch);
                     break;
                 case GameMode.Playing:
                     space.Draw(_spriteBatch);

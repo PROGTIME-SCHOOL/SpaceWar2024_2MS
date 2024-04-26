@@ -47,6 +47,7 @@ namespace SpaceWar.Classes
         public Player()
         {
             shield = new Shield();
+            shield.Shielduse += UseShield;
             texture = null;
         }
 
@@ -173,6 +174,10 @@ namespace SpaceWar.Classes
 
         public void Damage()
         {
+            if(shield.IsActive == true)
+            {
+                return;
+            }
             health--;
             if (TakeDamage != null)
             {

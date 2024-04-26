@@ -81,10 +81,10 @@ namespace SpaceWar.Classes
                     selected = selected - 1;
                 }
             }
-            prevKeyBoardState = keyboardState;
+           
 
             //Click key->Enter
-            if (keyboardState.IsKeyDown(Keys.Enter))
+            if (prevKeyBoardState.IsKeyDown(Keys.Enter) && keyboardState.IsKeyUp(Keys.Enter))
             {
                 if (selected == 0)//Start
                 {
@@ -95,6 +95,7 @@ namespace SpaceWar.Classes
                     Game1.gameMode = GameMode.Exit;
                 }
             }
+            prevKeyBoardState = keyboardState;
         }
 
         public void Draw(SpriteBatch spriteBatch)

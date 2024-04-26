@@ -60,5 +60,10 @@ namespace SpaceWar.Classes.Components
         {
             spriteBatch.DrawString(spriteFont, text, position, color);
         }
+
+        public Vector2 SizeString(string text)
+        {
+            return spriteFont.MeasureString(text);
+        }
     }
 }

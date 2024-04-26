@@ -21,6 +21,8 @@ namespace SpaceWar.Classes
         private bool isActive;
         private int timer;
 
+        public event Action<int> Shielduse;
+
         public Texture2D Texture
         {
             get { return texture; }
@@ -34,7 +36,7 @@ namespace SpaceWar.Classes
         {
             isCanBeUsed = true;
             isActive = false;
-            timer = 0;
+            timer = timeUse;
         }
 
         public void LoadContent(ContentManager manager)
@@ -50,7 +52,11 @@ namespace SpaceWar.Classes
 
             if (keyState.IsKeyDown(Keys.E))
             {
-                isActive = true;
+                if(isCanBeUsed==true)
+                {
+                    isActive = true;
+                    isCanBeUsed = false;
+                }  
             }
 
             if(timer > 0 && isCanBeUsed == false)
@@ -67,7 +73,27 @@ namespace SpaceWar.Classes
                 {
                     timer = timeUse;
                     isCanBeUsed = true;
+                    OnShieldUsed(100);
                 }    
+            }
+            if(timer<=0 && isCanBeUsed == false && IsActive==false) 
+            {
+                timer = timeRegenerate;
+            }
+            if(IsActive==true && isCanBeUsed==false)
+            {
+                OnShieldUsed(timer * 100 / timeUse);
+            }
+            if (IsActive == false && isCanBeUsed == false)
+            {
+                OnShieldUsed((timeRegenerate-timer) * 100 / timeRegenerate);
+            }
+        }
+        public void OnShieldUsed(int percent)
+        {
+            if(Shielduse != null)
+            {
+                Shielduse(percent);
             }
         }
     }
