@@ -12,9 +12,9 @@ namespace SpaceWar.Classes.Components
     class Bar
     {
         protected Texture2D texture;
-        protected Vector2 position;
-        protected int width;
-        protected int height;
+        protected Vector2 position;    
+        protected int width;           
+        protected int height;          
         protected string nameTexture;
 
         public int Width
