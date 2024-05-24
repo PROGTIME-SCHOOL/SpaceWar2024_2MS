@@ -39,6 +39,10 @@ namespace SpaceWar.Classes
         {
             healthBar.Width = healthBar.Width - 10;
         }
+        public void OnPlayerHealed()
+        {
+            healthBar.Width += 20;
+        }
         public void OnShieldUsed(int percent)
         {
             shieldBar.Width = percent;

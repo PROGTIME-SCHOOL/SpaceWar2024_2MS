@@ -29,6 +29,7 @@ namespace SpaceWar.Classes
         private int score;
 
         public event Action TakeDamage;
+        public event Action CollectHP;
         public event Action<int> ScoreUpdate;
         public event Action<int> ShieldUse;
 
@@ -43,6 +44,10 @@ namespace SpaceWar.Classes
         public List<Bullet> BulletList
         {
             get { return bulletList; }
+        }
+        public int Score
+        {
+            get { return score; }
         }
         public Player()
         {
@@ -182,6 +187,19 @@ namespace SpaceWar.Classes
             if (TakeDamage != null)
             {
                 TakeDamage();
+            }
+        }
+
+        public void Heal()
+        {
+            if (shield.IsActive == true || health >= 10)
+            {
+                return;
+            }
+            health += 2;
+            if(CollectHP != null)
+            {
+                CollectHP();
             }
         }
 

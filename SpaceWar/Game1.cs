@@ -7,6 +7,10 @@ using SpaceWar.Classes.Components;
 using System;
 using SharpDX.XAudio2;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.IO;
+using SharpDX.Direct3D9;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace SpaceWar
 {
@@ -22,6 +26,7 @@ namespace SpaceWar
 
         private List<Asteroid> asteroids;
         private List<Explosion> explosions;
+        private List<HealBoost> healsBoosters;
         private int screenWidth;
         private int screenHeight;
 
@@ -31,6 +36,8 @@ namespace SpaceWar
         private GameOver gameOver;
         private PauseMenu pauseMenu;
         private HUD hud;
+
+        private FileManager fileManager;
 
         public static GameMode gameMode;
 
@@ -66,7 +73,11 @@ namespace SpaceWar
             gameOver = new GameOver(screenWidth, screenHeight);//   нет
             pauseMenu = new PauseMenu(screenWidth, screenHeight);
             hud = new HUD();                                   //   да
-            player.TakeDamage += hud.OnPlayerTakeDamage;       //   нет
+
+            fileManager = new FileManager("text.json");
+
+            player.TakeDamage += hud.OnPlayerTakeDamage;
+            player.CollectHP += hud.OnPlayerHealed;
             player.ScoreUpdate += hud.OnPlayerScoreChanged;
             player.ShieldUse += hud.OnShieldUsed;
             base.Initialize();                                 //
@@ -78,7 +89,9 @@ namespace SpaceWar
             space.Reset();
             asteroids = new List<Asteroid>();
             explosions = new List<Explosion>();
+            healsBoosters = new List<HealBoost>();
             hud.Reset();
+            gameOver.Restart();
         }
 
         protected override void LoadContent()
@@ -126,13 +139,15 @@ namespace SpaceWar
                     UpdateAsteroid();
                     CheckCollision();
                     UpdateExplosion(gameTime);
-                    if(Keyboard.GetState().IsKeyDown(Keys.Escape))
+                    UpdatehealBoosters();
+                    if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                     {
                         gameMode = GameMode.Pause;
                     }
                     break;
                 case GameMode.GameOver:
                     gameOver.Update();
+                    //Save();
                     break;
                 case GameMode.Exit:
                     Exit();
@@ -140,15 +155,10 @@ namespace SpaceWar
                 default:
                     break;
             }
-
-
-
-
-
-
-
             base.Update(gameTime);
         }
+
+
 
         protected override void Draw(GameTime gameTime)
         {
@@ -156,7 +166,6 @@ namespace SpaceWar
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-
 
             switch (gameMode)
             {
@@ -193,6 +202,10 @@ namespace SpaceWar
                     foreach (Explosion exp in explosions)
                     {
                         exp.Draw(_spriteBatch);
+                    }
+                    foreach (HealBoost hb in healsBoosters)
+                    {
+                        hb.Draw(_spriteBatch);
                     }
 
                     hud.Draw(_spriteBatch);
@@ -262,13 +275,37 @@ namespace SpaceWar
                 if (a.Collision.Intersects(player.Collision))
                 {
                     a.IsAlive = false;
-                    //уменьшение hp игрока
-                    //изменение healthbar
                     player.Damage();
                     LoadExplotion(a.Position);
                     if (player.Health <= 0)
                     {
                         gameMode = GameMode.GameOver;
+                        List<SaveData> totalScore = (List<SaveData>)(fileManager.ReadJson());
+                        string plaerScore = player.Score.ToString();
+                        if (totalScore != null)
+                        {
+                            gameOver.AddScores(plaerScore, totalScore[totalScore.Count - 1].Score.ToString());
+                            if (int.Parse(plaerScore) > totalScore[totalScore.Count - 1].Score)
+                            {
+                                SaveData sd = new SaveData
+                                {
+                                    RecordSetTime = DateTime.Now,
+                                    Score = player.Score
+                                };
+                                totalScore.Add(sd);
+                                fileManager.WriteJson(totalScore);
+                            }
+                        }
+                        else
+                        {
+                            SaveData sd = new SaveData
+                            {
+                                RecordSetTime = DateTime.Now,
+                                Score = player.Score
+                            };
+                            totalScore.Add(sd);
+                            fileManager.WriteJson(totalScore);
+                        }
                         break;
                     }
                 }
@@ -277,13 +314,28 @@ namespace SpaceWar
                     if (a.Collision.Intersects(b.Collision))
                     {
                         a.IsAlive = false;
+                        //появление бустера
+                        if (a.Bonusprobability < 50)
+                        {
+                            HealBoost hb = new HealBoost(a.Position);
+                            hb.LoadContent(Content);
+                            healsBoosters.Add(hb);
+                        }
                         b.IsAlive = false;
                         LoadExplotion(a.Position);
                         player.AddScore();
                     }
                 }
             }
-
+            foreach (HealBoost hb in healsBoosters)
+            {
+                if (player.Collision.Intersects(hb.Collision))
+                {
+                    player.Heal();
+                    hb.IsAlive = false;
+                    //healsBoosters.Remove(hb);
+                }
+            }
         }
         private void UpdateExplosion(GameTime gametime)
         {
@@ -293,6 +345,19 @@ namespace SpaceWar
                 if (explosions[i].IsAlive == false)
                 {
                     explosions.Remove(explosions[i]);
+                    i--;
+                }
+            }
+        }
+        private void UpdatehealBoosters()
+        {
+            for (int i = 0; i < healsBoosters.Count; i++)
+            {
+                HealBoost hb = healsBoosters[i];
+                hb.Update();
+                if (hb.Position.Y > screenHeight + 50 || hb.IsAlive == false)
+                {
+                    healsBoosters.Remove(hb);
                     i--;
                 }
             }

@@ -17,7 +17,13 @@ namespace SpaceWar.Classes
         private float speed;
         private Rectangle collision;
         private bool isAlive;
+        private int bonusProbability;
+        private Random random;
 
+        public int Bonusprobability
+        {
+            get { return bonusProbability; } 
+        }
         public Vector2 Position
         {
             get { return position; }
@@ -49,6 +55,8 @@ namespace SpaceWar.Classes
             position = new Vector2(0, 0);
             speed = 2;//2
             isAlive = true;
+            random = new Random();
+            bonusProbability = random.Next(0, 101);
         }
         public Asteroid(Vector2 pos) : this() 
         {
